@@ -195,37 +195,13 @@ document.addEventListener('DOMContentLoaded', function () {
       anthracite: { name: 'Anthracite',          hex: '#3a3d42', filter: 'hue-rotate(0deg) saturate(0.14) brightness(0.5)' }
     };
 
-    /* Model range */
+    /* Model range — a single Chiron, differentiated purely by colour */
     const MODELS = [
       {
         id: 'chiron', name: 'Chiron', tagline: 'The Original Icon',
         desc: 'The car that redefined the hypercar category — pure, uncompromising, timeless.',
         hp: 1500, speed: 420, accel: 2.4, price: '€ 2,998,000',
         colors: ['blue', 'black', 'white', 'silver'], defaultColor: 'blue'
-      },
-      {
-        id: 'sport', name: 'Chiron Sport', tagline: 'Track-Tuned Precision',
-        desc: 'Sharper reflexes and a lighter footprint, honed on the Nürburgring for pure driving feedback.',
-        hp: 1500, speed: 420, accel: 2.4, price: '€ 3,260,000',
-        colors: ['blue', 'black', 'red', 'anthracite'], defaultColor: 'anthracite'
-      },
-      {
-        id: 'supersport', name: 'Chiron Super Sport 300+', tagline: 'Beyond 300 mph',
-        desc: 'The first production car to exceed 300 mph — an elongated tail and reworked aero for absolute top-end stability.',
-        hp: 1600, speed: 490, accel: 2.4, price: '€ 3,900,000',
-        colors: ['black', 'silver', 'white', 'blue'], defaultColor: 'black'
-      },
-      {
-        id: 'pursport', name: 'Chiron Pur Sport', tagline: 'Corner-Carving Purist',
-        desc: 'Shorter gearing, wider track and a fixed rear wing built for one purpose: devouring apexes.',
-        hp: 1500, speed: 380, accel: 2.3, price: '€ 3,550,000',
-        colors: ['green', 'black', 'gold', 'silver'], defaultColor: 'green'
-      },
-      {
-        id: 'divo', name: 'Divo', tagline: 'Agility Redefined',
-        desc: 'Named after a legendary Bugatti racer — 35kg lighter and built to generate maximum downforce through corners.',
-        hp: 1500, speed: 380, accel: 2.4, price: '€ 5,000,000',
-        colors: ['black', 'blue', 'anthracite', 'white'], defaultColor: 'black'
       }
     ];
 
@@ -389,49 +365,57 @@ document.addEventListener('DOMContentLoaded', function () {
         id: 'chiron', chiron: true,
         brand: 'Bugatti', name: 'Chiron',
         img: 'img/supercars/chiron_showroom.png',
-        hp: '1,500', speed: '420', badge: 'House Icon'
+        hp: '1,500', speed: '420', badge: 'House Icon',
+        desc: 'Bugatti\'s original hypercar icon — a hand-built masterpiece of carbon fibre and quad-turbo W16 power, wearing the house\'s signature French Racing Blue.'
       },
       {
         id: 'ferrari', brand: 'Ferrari', name: 'SF90 Stradale',
         img: 'img/supercars/ferrari_sf90_stradale.png',
-        hp: '986', speed: '340'
+        hp: '986', speed: '340',
+        desc: 'Ferrari\'s first series-production plug-in hybrid supercar, pairing a twin-turbo V8 with three electric motors for instant all-wheel-drive response.'
       },
       {
         id: 'lambo', brand: 'Lamborghini', name: 'Aventador SVJ',
         img: 'img/supercars/lamborghini_aventador_svj.png',
-        hp: '770', speed: '350'
+        hp: '770', speed: '350',
+        desc: 'The final and most extreme naturally-aspirated Aventador, honed on the Nürburgring with active aerodynamics for record-setting cornering grip.'
       },
       {
         id: 'koenigsegg', brand: 'Koenigsegg', name: 'Jesko Absolut',
         img: 'img/supercars/koenigsegg_jesko_absolut.png',
-        hp: '1,600', speed: '500+'
+        hp: '1,600', speed: '500+',
+        desc: 'A Swedish top-speed specialist stripped of wings and drag, built with one goal: chasing the outer edge of velocity itself.'
       },
       {
         id: 'mclaren', brand: 'McLaren', name: 'Speedtail',
         img: 'img/supercars/mclaren_speedtail.png',
-        hp: '1,050', speed: '403'
+        hp: '1,050', speed: '403',
+        desc: 'A three-seat hybrid Hyper-GT with a streamlined teardrop silhouette, engineered for effortless, sustained high-speed cruising.'
       },
       {
         id: 'pagani', brand: 'Pagani', name: 'Huayra BC',
         img: 'img/supercars/pagani_huayra_bc.png',
-        hp: '750', speed: '383'
+        hp: '750', speed: '383',
+        desc: 'Named after Pagani test driver Benny Caiola, sharpened with carbon-titanium construction and track-focused aerodynamics.'
       },
       {
         id: 'porsche', brand: 'Porsche', name: '918 Spyder',
         img: 'img/supercars/porsche_918_spyder.png',
-        hp: '887', speed: '345'
+        hp: '887', speed: '345',
+        desc: 'Porsche\'s hybrid hypercar halo model, combining a naturally-aspirated V8 with two electric motors for seamless all-wheel drive.'
       }
     ];
 
     grid.innerHTML = CARS.map(function (car, i) {
       const delay = 'delay-' + (Math.min(i % 5, 5) + 1);
       return (
-        '<div class="showroom-card' + (car.chiron ? ' is-chiron' : '') + ' reveal ' + delay + '" data-car="' + car.id + '">' +
+        '<div class="showroom-card' + (car.chiron ? ' is-chiron' : '') + ' reveal ' + delay + '" data-car="' + car.id + '" tabindex="0" role="button" aria-label="View details for ' + car.brand + ' ' + car.name + '">' +
           '<div class="showroom-spot" aria-hidden="true"></div>' +
           (car.chiron ? '<span class="showroom-badge">' + car.badge + '</span>' : '') +
           '<div class="showroom-reflection" aria-hidden="true"><img src="' + car.img + '" alt="" loading="lazy" /></div>' +
           '<div class="showroom-pedestal" aria-hidden="true"></div>' +
           '<div class="showroom-figure"><img src="' + car.img + '" alt="' + car.brand + ' ' + car.name + ' on a black studio pedestal" loading="lazy" /></div>' +
+          '<span class="showroom-view-hint">View Details</span>' +
           '<div class="showroom-info">' +
             '<p class="showroom-brand">' + car.brand + '</p>' +
             '<h3 class="showroom-name">' + car.name + '</h3>' +
@@ -470,6 +454,49 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       });
     }
+
+    /* ── DETAIL MODAL ── */
+    function openCarDetail(car) {
+      const overlay = document.createElement('div');
+      overlay.className = 'showroom-detail-overlay';
+      overlay.innerHTML =
+        '<div class="showroom-detail-card' + (car.chiron ? ' is-chiron' : '') + '" role="dialog" aria-modal="true" aria-label="' + car.brand + ' ' + car.name + ' details">' +
+          '<button type="button" class="showroom-detail-close" aria-label="Close">&times;</button>' +
+          '<div class="showroom-detail-spot" aria-hidden="true"></div>' +
+          '<div class="showroom-detail-figure"><img src="' + car.img + '" alt="' + car.brand + ' ' + car.name + '" /></div>' +
+          '<p class="showroom-detail-brand">' + car.brand + '</p>' +
+          '<h3 class="showroom-detail-name">' + car.name + '</h3>' +
+          '<p class="showroom-detail-desc">' + car.desc + '</p>' +
+          '<div class="showroom-detail-stats">' +
+            '<div><strong>' + car.hp + '</strong><span>Horsepower</span></div>' +
+            '<div><strong>' + car.speed + '</strong><span>km/h Top Speed</span></div>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      document.body.style.overflow = 'hidden';
+      requestAnimationFrame(function () { overlay.classList.add('is-open'); });
+
+      function closeModal() {
+        overlay.classList.remove('is-open');
+        document.body.style.overflow = '';
+        setTimeout(function () { overlay.remove(); }, 300);
+        document.removeEventListener('keydown', onKeydown);
+      }
+      function onKeydown(e) { if (e.key === 'Escape') closeModal(); }
+
+      overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+      overlay.querySelector('.showroom-detail-close').addEventListener('click', closeModal);
+      document.addEventListener('keydown', onKeydown);
+    }
+
+    grid.querySelectorAll('.showroom-card').forEach(function (card) {
+      const car = CARS.find(function (c) { return c.id === card.getAttribute('data-car'); });
+      if (!car) return;
+      card.addEventListener('click', function () { openCarDetail(car); });
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCarDetail(car); }
+      });
+    });
   })();
 
   /* ── CURSOR GLOW EFFECT ── */

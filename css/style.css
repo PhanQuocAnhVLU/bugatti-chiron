@@ -812,8 +812,11 @@ body {
   pointer-events: none;
 }
 
-/* Model tabs */
+/* Model tabs — hidden: only the Chiron remains, differentiated by colour swatches below */
 .model-tabs {
+  display: none;
+}
+.model-tabs-legacy {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -1628,6 +1631,184 @@ body {
 }
 
 .showroom-card:hover .showroom-spot { opacity: 1; }
+.showroom-card { cursor: pointer; }
+.showroom-card:focus-visible { outline: 2px solid var(--bugatti-accent); outline-offset: 3px; }
+
+/* "View Details" hint pill — appears on hover/focus, invites the click */
+.showroom-view-hint {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  background: rgba(5,8,16,0.7);
+  border: 1px solid var(--glass-border);
+  padding: 5px 10px;
+  border-radius: 30px;
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.showroom-card:hover .showroom-view-hint,
+.showroom-card:focus-visible .showroom-view-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── SHOWROOM DETAIL MODAL ── */
+.showroom-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(2,3,6,0.86);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.showroom-detail-overlay.is-open { opacity: 1; }
+
+.showroom-detail-card {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  border-radius: 12px;
+  padding: 2.5rem 2rem 2.25rem;
+  text-align: center;
+  background: linear-gradient(180deg, #070a12 0%, #0a0d16 55%, #010203 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 50px 100px -30px rgba(0,0,0,0.9);
+  transform: scale(0.94) translateY(10px);
+  transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+  overflow: hidden;
+}
+
+.showroom-detail-overlay.is-open .showroom-detail-card { transform: scale(1) translateY(0); }
+
+.showroom-detail-card.is-chiron {
+  border-color: rgba(74,157,255,0.35);
+  box-shadow: 0 0 0 1px rgba(74,157,255,0.2), 0 50px 100px -30px rgba(74,157,255,0.3);
+}
+
+.showroom-detail-spot {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  width: 140%;
+  height: 55%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse 45% 100% at 50% 0%, rgba(255,255,255,0.14) 0%, transparent 72%);
+  pointer-events: none;
+}
+
+.showroom-detail-card.is-chiron .showroom-detail-spot {
+  background: radial-gradient(ellipse 50% 100% at 50% 0%, rgba(74,157,255,0.34) 0%, transparent 75%);
+}
+
+.showroom-detail-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: rgba(5,8,16,0.6);
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: var(--transition-std);
+}
+.showroom-detail-close:hover { background: var(--bugatti-accent); color: #050810; border-color: var(--bugatti-accent); }
+
+.showroom-detail-figure {
+  position: relative;
+  z-index: 1;
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.showroom-detail-figure img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: saturate(1.15) contrast(1.05) drop-shadow(0 14px 18px rgba(0,0,0,0.6));
+}
+
+.showroom-detail-brand {
+  position: relative;
+  z-index: 1;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.showroom-detail-card.is-chiron .showroom-detail-brand { color: var(--bugatti-accent); }
+
+.showroom-detail-name {
+  position: relative;
+  z-index: 1;
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.9rem;
+}
+
+.showroom-detail-desc {
+  position: relative;
+  z-index: 1;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.showroom-detail-stats {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--glass-border);
+}
+.showroom-detail-stats strong {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+}
+.showroom-detail-card.is-chiron .showroom-detail-stats strong { color: var(--bugatti-accent); }
+.showroom-detail-stats span {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 479.98px) {
+  .showroom-detail-card { padding: 2.25rem 1.25rem 1.75rem; }
+  .showroom-detail-stats { gap: 1.5rem; }
+}
 
 @media (max-width: 1199.98px) {
   .showroom-grid { grid-template-columns: repeat(3, 1fr); }
