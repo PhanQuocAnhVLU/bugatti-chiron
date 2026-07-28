@@ -535,17 +535,15 @@
             <span></span><span></span><span></span><span></span><span></span><span></span>
           </div>
 
-          <!-- Car + reflection -->
+          <!-- Car + reflection (hand-drawn SVG, no photo assets — colours paint exactly) -->
           <div class="car-stage" id="carStage">
-            <div class="car-reflection" aria-hidden="true">
-              <img class="car-photo" id="carReflectionImg" src="img/side-car.png" alt="" />
-              <div class="car-tint car-tint-hue" id="reflHue"></div>
-              <div class="car-tint car-tint-lum" id="reflLum"></div>
+            <div class="car-reflection" id="carReflection" aria-hidden="true">
+              <div class="car-svg-mount" id="carReflectionMount"></div>
             </div>
-            <div class="car-figure" id="carFigure">
-              <img class="car-photo" id="modelShowcaseImg" src="img/side-car.png" alt="Bugatti Chiron showcase" loading="lazy" />
-              <div class="car-tint car-tint-hue" id="mainHue"></div>
-              <div class="car-tint car-tint-lum" id="mainLum"></div>
+            <div class="car-turntable" id="carTurntable">
+              <div class="car-figure" id="carFigure">
+                <div class="car-svg-mount" id="carShowcaseMount" role="img" aria-label="Bugatti Chiron showcase"></div>
+              </div>
             </div>
           </div>
 
@@ -845,6 +843,8 @@
         integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
         crossorigin="anonymous"></script>
 
+<!-- Hand-drawn car SVG builder (original artwork, no photos — royalty free) -->
+<script src="js/car-svg.js"></script>
 <!-- Custom JS -->
 <script src="js/main.js"></script>
 
