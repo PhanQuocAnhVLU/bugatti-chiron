@@ -520,8 +520,35 @@
       <!-- Showcase -->
       <div class="col-lg-7 mb-5 mb-lg-0">
         <div class="model-showcase" id="modelShowcase">
-          <div class="model-showcase-glow" aria-hidden="true"></div>
-          <img src="img/side.png" alt="Bugatti Chiron showcase" id="modelShowcaseImg" loading="lazy" />
+
+          <!-- Exhibition backdrop -->
+          <div class="stage-backdrop" aria-hidden="true">
+            <div class="stage-spotlight stage-spotlight-a"></div>
+            <div class="stage-spotlight stage-spotlight-b"></div>
+            <div class="stage-ring"></div>
+            <div class="stage-sweep"></div>
+          </div>
+          <div class="stage-floor" aria-hidden="true">
+            <div class="stage-floor-glow" id="stageFloorGlow"></div>
+          </div>
+          <div class="stage-particles" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+
+          <!-- Car + reflection -->
+          <div class="car-stage" id="carStage">
+            <div class="car-reflection" aria-hidden="true">
+              <img class="car-photo" id="carReflectionImg" src="img/side-car.png" alt="" />
+              <div class="car-tint car-tint-hue" id="reflHue"></div>
+              <div class="car-tint car-tint-lum" id="reflLum"></div>
+            </div>
+            <div class="car-figure" id="carFigure">
+              <img class="car-photo" id="modelShowcaseImg" src="img/side-car.png" alt="Bugatti Chiron showcase" loading="lazy" />
+              <div class="car-tint car-tint-hue" id="mainHue"></div>
+              <div class="car-tint car-tint-lum" id="mainLum"></div>
+            </div>
+          </div>
+
           <div class="model-color-tag" id="modelColorTag">French Racing Blue</div>
 
           <!-- View toggle -->

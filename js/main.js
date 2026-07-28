@@ -163,6 +163,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const tabsEl = document.getElementById('modelTabs');
     const swatchesEl = document.getElementById('colorSwatches');
     const showcaseImg = document.getElementById('modelShowcaseImg');
+    const reflImg = document.getElementById('carReflectionImg');
+    const carFigure = document.getElementById('carFigure');
+    const carReflection = document.querySelector('.car-reflection');
+    const mainHue = document.getElementById('mainHue');
+    const mainLum = document.getElementById('mainLum');
+    const reflHue = document.getElementById('reflHue');
+    const reflLum = document.getElementById('reflLum');
+    const stageFloorGlow = document.getElementById('stageFloorGlow');
+    const modelShowcase = document.getElementById('modelShowcase');
     const colorTag = document.getElementById('modelColorTag');
     const viewToggle = document.getElementById('viewToggle');
     const taglineEl = document.getElementById('modelTagline');
@@ -175,24 +184,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!tabsEl || !swatchesEl || !showcaseImg) return;
 
-    /* Camera views — reuses the three available photography assets */
+    /* Camera views — car cut out on a transparent background so paint
+       colour only ever touches the body, never the studio backdrop */
     const VIEWS = {
-      side:  'img/side.png',
-      front: 'img/hero.png',
-      rear:  'img/rear.png'
+      side:  'img/side-car.png',
+      front: 'img/front-car.png',
+      rear:  'img/rear-car.png'
     };
 
-    /* Colour library — filters approximate each paintwork from the
-       photographed French Racing Blue base (hue ≈ 215°) */
+    /* Colour library. Each swatch repaints the car in two passes on top of
+       a fully desaturated base photo:
+         hue  → mix-blend-mode:color, casts the actual paint hue/saturation
+         lum  → multiply (darken) or screen (lighten) to hit the right value,
+                masked to the same car silhouette so nothing bleeds onto the stage */
     const COLORS = {
-      blue:       { name: 'French Racing Blue', hex: '#0047AB', filter: 'hue-rotate(0deg) saturate(1) brightness(1)' },
-      black:      { name: 'Nocturne Black',      hex: '#0c0d10', filter: 'hue-rotate(0deg) saturate(0.12) brightness(0.34) contrast(1.25)' },
-      white:      { name: 'Glacier White',       hex: '#eef1f5', filter: 'hue-rotate(0deg) saturate(0.08) brightness(1.65) contrast(0.92)' },
-      silver:     { name: 'Argent Silver',       hex: '#b0bec5', filter: 'hue-rotate(0deg) saturate(0.22) brightness(1.18)' },
-      red:        { name: 'Italian Red',         hex: '#a3161b', filter: 'hue-rotate(145deg) saturate(1.35) brightness(0.92)' },
-      gold:       { name: 'Bronze Gold',         hex: '#a9772f', filter: 'hue-rotate(190deg) saturate(0.85) brightness(0.88)' },
-      green:      { name: 'Racing Green',        hex: '#1f4d3a', filter: 'hue-rotate(285deg) saturate(0.9) brightness(0.55)' },
-      anthracite: { name: 'Anthracite',          hex: '#3a3d42', filter: 'hue-rotate(0deg) saturate(0.14) brightness(0.5)' }
+      blue:       { name: 'French Racing Blue', hex: '#0047AB', hueOpacity: 0.70, lumMode: 'none',     lumOpacity: 0 },
+      black:      { name: 'Nocturne Black',      hex: '#0c0d10', hueOpacity: 0.35, lumMode: 'multiply', lumOpacity: 0.58, lumColor: '#000000' },
+      white:      { name: 'Glacier White',       hex: '#eef1f5', hueOpacity: 0.20, lumMode: 'screen',   lumOpacity: 0.62, lumColor: '#ffffff' },
+      silver:     { name: 'Argent Silver',       hex: '#b0bec5', hueOpacity: 0.32, lumMode: 'screen',   lumOpacity: 0.22, lumColor: '#ffffff' },
+      red:        { name: 'Italian Red',         hex: '#a3161b', hueOpacity: 0.78, lumMode: 'none',     lumOpacity: 0 },
+      gold:       { name: 'Bronze Gold',         hex: '#a9772f', hueOpacity: 0.72, lumMode: 'multiply', lumOpacity: 0.10, lumColor: '#000000' },
+      green:      { name: 'Racing Green',        hex: '#1f4d3a', hueOpacity: 0.72, lumMode: 'multiply', lumOpacity: 0.26, lumColor: '#000000' },
+      anthracite: { name: 'Anthracite',          hex: '#3a3d42', hueOpacity: 0.40, lumMode: 'multiply', lumOpacity: 0.36, lumColor: '#000000' }
     };
 
     /* Model range */
@@ -269,14 +282,39 @@ document.addEventListener('DOMContentLoaded', function () {
       return COLORS[key] === currentColor;
     }
 
+    /* Paint a single hue/lum overlay pair to match a colour entry */
+    function tintPair(hueEl, lumEl, color) {
+      if (!hueEl || !lumEl) return;
+      hueEl.style.backgroundColor = color.hex;
+      hueEl.style.opacity = color.hueOpacity;
+      if (color.lumMode === 'none') {
+        lumEl.style.opacity = 0;
+      } else {
+        lumEl.style.backgroundColor = color.lumColor;
+        lumEl.style.mixBlendMode = color.lumMode;
+        lumEl.style.opacity = color.lumOpacity;
+      }
+    }
+
     function applyColor(key, animateSwatchList) {
       currentColor = COLORS[key];
-      showcaseImg.style.filter = currentColor.filter;
+
+      tintPair(mainHue, mainLum, currentColor);
+      tintPair(reflHue, reflLum, currentColor);
+
+      /* Studio floor glow picks up the paint colour for cohesion */
+      if (stageFloorGlow) stageFloorGlow.style.background =
+        'radial-gradient(ellipse at center, ' + currentColor.hex + ' 0%, transparent 75%)';
+      if (modelShowcase) modelShowcase.style.setProperty('--paint-hex', currentColor.hex);
+
       colorTag.style.opacity = '0';
+      colorTag.style.transform = 'translateY(4px)';
       setTimeout(function () {
         colorTag.textContent = currentColor.name;
         colorTag.style.opacity = '1';
+        colorTag.style.transform = 'translateY(0)';
       }, 200);
+
       if (animateSwatchList !== false) {
         swatchesEl.querySelectorAll('.swatch').forEach(function (sw) {
           sw.classList.toggle('active', sw.getAttribute('data-color-key') === key);
@@ -284,13 +322,28 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    function setImages(view) {
+      const url = 'url(' + VIEWS[view] + ')';
+      showcaseImg.src = VIEWS[view];
+      if (reflImg) reflImg.src = VIEWS[view];
+      /* Tint overlays are masked by the same cutout so colour never
+         spills past the car's silhouette, matching whichever angle is shown */
+      [mainHue, mainLum, reflHue, reflLum].forEach(function (el) {
+        if (!el) return;
+        el.style.webkitMaskImage = url;
+        el.style.maskImage = url;
+      });
+    }
+
     function applyView(view) {
       currentView = view;
-      showcaseImg.classList.add('is-switching');
+      carFigure.classList.add('is-switching');
+      if (carReflection) carReflection.classList.add('is-switching');
       setTimeout(function () {
-        showcaseImg.src = VIEWS[view];
-        showcaseImg.classList.remove('is-switching');
-      }, 300);
+        setImages(view);
+        carFigure.classList.remove('is-switching');
+        if (carReflection) carReflection.classList.remove('is-switching');
+      }, 320);
       viewToggle.querySelectorAll('.view-btn').forEach(function (btn) {
         btn.classList.toggle('active', btn.getAttribute('data-view') === view);
       });
@@ -315,6 +368,11 @@ document.addEventListener('DOMContentLoaded', function () {
       animateStat(statHp, model.hp, 0);
       animateStat(statSpeed, model.speed, 0);
       animateStat(statAccel, model.accel, 1);
+
+      /* "Turntable swap" — the outgoing car twists off, the new one settles in */
+      carFigure.classList.remove('is-model-switching');
+      void carFigure.offsetWidth; /* restart animation */
+      carFigure.classList.add('is-model-switching');
 
       renderTabs();
       applyColor(model.defaultColor, false);
@@ -358,6 +416,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* Init */
+    setImages(currentView);
     renderTabs();
     renderSwatches();
     applyColor(currentModel.defaultColor, false);
