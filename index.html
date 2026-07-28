@@ -50,6 +50,7 @@
         <a href="#specs"   class="nav-link-custom" id="nav-specs">Specs</a>
         <a href="#design"  class="nav-link-custom" id="nav-design">Design</a>
         <a href="#engine"  class="nav-link-custom" id="nav-engine">Engine</a>
+        <a href="#models"  class="nav-link-custom" id="nav-models">Models</a>
         <a href="#gallery" class="nav-link-custom" id="nav-gallery">Gallery</a>
         <a href="#cta"     class="btn-nav-cta ml-3" id="nav-cta">Configure</a>
       </div>
@@ -67,6 +68,7 @@
       <a href="#specs"   class="nav-link-custom d-block py-2" id="mob-nav-specs">Specs</a>
       <a href="#design"  class="nav-link-custom d-block py-2" id="mob-nav-design">Design</a>
       <a href="#engine"  class="nav-link-custom d-block py-2" id="mob-nav-engine">Engine</a>
+      <a href="#models"  class="nav-link-custom d-block py-2" id="mob-nav-models">Models</a>
       <a href="#gallery" class="nav-link-custom d-block py-2" id="mob-nav-gallery">Gallery</a>
       <a href="#cta"     class="nav-link-custom d-block py-2" id="mob-nav-cta">Configure</a>
     </div>
@@ -489,6 +491,98 @@
 
 
 <!-- ═══════════════════════════════════════
+     MODELS — RANGE & COLOUR CONFIGURATOR
+═══════════════════════════════════════ -->
+<section id="models" class="section-pad" aria-labelledby="models-heading">
+  <div class="container">
+
+    <div class="text-center mb-5 reveal">
+      <span class="section-eyebrow">Explore the Range</span>
+      <h2 class="section-title" id="models-heading">Choose Your Chiron</h2>
+      <div class="section-divider justify-content-center">
+        <div class="line" style="background: linear-gradient(90deg, transparent, var(--bugatti-accent));"></div>
+        <div class="dot"></div>
+        <div class="line" style="background: linear-gradient(90deg, var(--bugatti-accent), transparent);"></div>
+      </div>
+      <p class="section-desc mx-auto text-center">
+        Five distinct characters, one relentless pursuit of perfection. Select a model,
+        then personalise it in any of Bugatti's signature colourways.
+      </p>
+    </div>
+
+    <!-- Model Tabs -->
+    <div class="model-tabs reveal" id="modelTabs" role="tablist" aria-label="Select a Chiron model">
+      <!-- populated by JS -->
+    </div>
+
+    <div class="row align-items-center model-configurator reveal">
+
+      <!-- Showcase -->
+      <div class="col-lg-7 mb-5 mb-lg-0">
+        <div class="model-showcase" id="modelShowcase">
+          <div class="model-showcase-glow" aria-hidden="true"></div>
+          <img src="img/side.png" alt="Bugatti Chiron showcase" id="modelShowcaseImg" loading="lazy" />
+          <div class="model-color-tag" id="modelColorTag">French Racing Blue</div>
+
+          <!-- View toggle -->
+          <div class="view-toggle" id="viewToggle" role="group" aria-label="Change camera angle">
+            <button type="button" class="view-btn active" data-view="side" id="view-side">Side</button>
+            <button type="button" class="view-btn" data-view="front" id="view-front">Front</button>
+            <button type="button" class="view-btn" data-view="rear" id="view-rear">Rear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div class="col-lg-5 pl-lg-4">
+        <div id="modelDetails">
+          <span class="model-tagline" id="modelTagline">The Original Icon</span>
+          <h3 class="model-name" id="modelName">Chiron</h3>
+          <p class="model-desc" id="modelDesc">
+            The car that redefined the hypercar category — pure, uncompromising, timeless.
+          </p>
+
+          <!-- Stats -->
+          <div class="model-stats-row" data-model-count-section>
+            <div class="model-stat">
+              <span class="model-stat-value" id="statHp" data-count="1500">0</span>
+              <span class="model-stat-unit">hp</span>
+              <span class="model-stat-label">Power</span>
+            </div>
+            <div class="model-stat">
+              <span class="model-stat-value" id="statSpeed" data-count="420">0</span>
+              <span class="model-stat-unit">km/h</span>
+              <span class="model-stat-label">Top Speed</span>
+            </div>
+            <div class="model-stat">
+              <span class="model-stat-value" id="statAccel" data-count="2.4" data-decimal="1">0</span>
+              <span class="model-stat-unit">s</span>
+              <span class="model-stat-label">0–100 km/h</span>
+            </div>
+          </div>
+
+          <!-- Colour swatches -->
+          <p class="swatch-label">Exterior Colour</p>
+          <div class="color-swatches" id="colorSwatches" role="group" aria-label="Select exterior colour">
+            <!-- populated by JS -->
+          </div>
+
+          <div class="model-price-row">
+            <div>
+              <p class="mb-0" style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-secondary);">Starting From</p>
+              <p class="model-price" id="modelPrice">€ 2,998,000</p>
+            </div>
+            <a href="#cta" class="btn-primary-custom" id="model-btn-configure"><span>Configure</span></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
      GALLERY
 ═══════════════════════════════════════ -->
 <section id="gallery" class="section-pad" aria-labelledby="gallery-heading">
@@ -649,11 +743,11 @@
       <!-- Models -->
       <div class="col-6 col-lg-2 mb-4 mb-lg-0">
         <p class="footer-links-title">Models</p>
-        <a href="#hero" class="footer-link">Chiron</a>
-        <a href="#hero" class="footer-link">Chiron Sport</a>
-        <a href="#hero" class="footer-link">Chiron Super Sport</a>
-        <a href="#hero" class="footer-link">Chiron Pur Sport</a>
-        <a href="#hero" class="footer-link">Divo</a>
+        <a href="#models" class="footer-link" data-model-select="chiron">Chiron</a>
+        <a href="#models" class="footer-link" data-model-select="sport">Chiron Sport</a>
+        <a href="#models" class="footer-link" data-model-select="supersport">Chiron Super Sport</a>
+        <a href="#models" class="footer-link" data-model-select="pursport">Chiron Pur Sport</a>
+        <a href="#models" class="footer-link" data-model-select="divo">Divo</a>
       </div>
 
       <!-- Experience -->
@@ -661,6 +755,7 @@
         <p class="footer-links-title">Experience</p>
         <a href="#design" class="footer-link">Design</a>
         <a href="#engine" class="footer-link">Performance</a>
+        <a href="#models" class="footer-link">Models</a>
         <a href="#gallery" class="footer-link">Gallery</a>
         <a href="#specs" class="footer-link">Specifications</a>
         <a href="#cta" class="footer-link">Configure</a>
