@@ -162,12 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
   (function () {
     const tabsEl = document.getElementById('modelTabs');
     const swatchesEl = document.getElementById('colorSwatches');
-    const showcaseMount = document.getElementById('carShowcaseMount');
-    const reflMount = document.getElementById('carReflectionMount');
-    const carFigure = document.getElementById('carFigure');
-    const carReflection = document.querySelector('.car-reflection');
-    const stageFloorGlow = document.getElementById('stageFloorGlow');
-    const modelShowcase = document.getElementById('modelShowcase');
+    const showcaseImg = document.getElementById('modelShowcaseImg');
     const colorTag = document.getElementById('modelColorTag');
     const viewToggle = document.getElementById('viewToggle');
     const taglineEl = document.getElementById('modelTagline');
@@ -178,21 +173,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const statSpeed = document.getElementById('statSpeed');
     const statAccel = document.getElementById('statAccel');
 
-    if (!tabsEl || !swatchesEl || !showcaseMount || !window.CarSVG) return;
+    if (!tabsEl || !swatchesEl || !showcaseImg) return;
 
-    /* Colour library. The car is original hand-drawn vector artwork (see
-       car-svg.js), so each swatch paints an exact, flat fill straight onto
-       the body panels — no photo-tint blending, so the colour on screen
-       always matches the swatch exactly. */
+    /* Camera views — reuses the three available photography assets */
+    const VIEWS = {
+      side:  'img/side.png',
+      front: 'img/hero.png',
+      rear:  'img/rear.png'
+    };
+
+    /* Colour library — filters approximate each paintwork from the
+       photographed French Racing Blue base (hue ≈ 215°) */
     const COLORS = {
-      blue:       { name: 'French Racing Blue', hex: '#0047AB' },
-      black:      { name: 'Nocturne Black',      hex: '#0c0d10' },
-      white:      { name: 'Glacier White',       hex: '#eef1f5' },
-      silver:     { name: 'Argent Silver',       hex: '#b0bec5' },
-      red:        { name: 'Italian Red',         hex: '#a3161b' },
-      gold:       { name: 'Bronze Gold',         hex: '#a9772f' },
-      green:      { name: 'Racing Green',        hex: '#1f4d3a' },
-      anthracite: { name: 'Anthracite',          hex: '#5a5f68' }
+      blue:       { name: 'French Racing Blue', hex: '#0047AB', filter: 'hue-rotate(0deg) saturate(1) brightness(1)' },
+      black:      { name: 'Nocturne Black',      hex: '#0c0d10', filter: 'hue-rotate(0deg) saturate(0.12) brightness(0.34) contrast(1.25)' },
+      white:      { name: 'Glacier White',       hex: '#eef1f5', filter: 'hue-rotate(0deg) saturate(0.08) brightness(1.65) contrast(0.92)' },
+      silver:     { name: 'Argent Silver',       hex: '#b0bec5', filter: 'hue-rotate(0deg) saturate(0.22) brightness(1.18)' },
+      red:        { name: 'Italian Red',         hex: '#a3161b', filter: 'hue-rotate(145deg) saturate(1.35) brightness(0.92)' },
+      gold:       { name: 'Bronze Gold',         hex: '#a9772f', filter: 'hue-rotate(190deg) saturate(0.85) brightness(0.88)' },
+      green:      { name: 'Racing Green',        hex: '#1f4d3a', filter: 'hue-rotate(285deg) saturate(0.9) brightness(0.55)' },
+      anthracite: { name: 'Anthracite',          hex: '#3a3d42', filter: 'hue-rotate(0deg) saturate(0.14) brightness(0.5)' }
     };
 
     /* Model range */
@@ -269,46 +269,14 @@ document.addEventListener('DOMContentLoaded', function () {
       return COLORS[key] === currentColor;
     }
 
-    /* Paint every body panel (main body, door, engine cover) with an
-       exact flat fill — this is the fix for the colour bug: no blend
-       modes, no darkening/lightening math, just the swatch's real hex. */
-    function paintMount(mount, hex) {
-      if (!mount) return;
-      mount.querySelectorAll('[data-paint="body"]').forEach(function (el) {
-        el.setAttribute('fill', hex);
-      });
-    }
-
-    /* Re-apply whichever part animation belongs to the current angle
-       (headlights for front, open door for side, open engine cover for
-       rear) — used whenever the SVG is rebuilt for a view or model swap. */
-    function applyPartState(mount, view, instant) {
-      if (!mount) return;
-      mount.classList.remove('lights-on', 'door-open', 'cover-open');
-      const cls = view === 'front' ? 'lights-on' : view === 'side' ? 'door-open' : 'cover-open';
-      const delay = instant ? 0 : 450;
-      setTimeout(function () { mount.classList.add(cls); }, delay);
-    }
-
     function applyColor(key, animateSwatchList) {
       currentColor = COLORS[key];
-
-      paintMount(showcaseMount, currentColor.hex);
-      paintMount(reflMount, currentColor.hex);
-
-      /* Studio floor glow picks up the paint colour for cohesion */
-      if (stageFloorGlow) stageFloorGlow.style.background =
-        'radial-gradient(ellipse at center, ' + currentColor.hex + ' 0%, transparent 75%)';
-      if (modelShowcase) modelShowcase.style.setProperty('--paint-hex', currentColor.hex);
-
+      showcaseImg.style.filter = currentColor.filter;
       colorTag.style.opacity = '0';
-      colorTag.style.transform = 'translateY(4px)';
       setTimeout(function () {
         colorTag.textContent = currentColor.name;
         colorTag.style.opacity = '1';
-        colorTag.style.transform = 'translateY(0)';
       }, 200);
-
       if (animateSwatchList !== false) {
         swatchesEl.querySelectorAll('.swatch').forEach(function (sw) {
           sw.classList.toggle('active', sw.getAttribute('data-color-key') === key);
@@ -316,31 +284,13 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
-    /* Build & mount the hand-drawn SVG for a given camera angle, then
-       repaint it and (re)trigger that angle's signature animation. */
-    function setImages(view, instant) {
-      showcaseMount.innerHTML = window.CarSVG.build(view, 'main');
-      if (reflMount) reflMount.innerHTML = window.CarSVG.build(view, 'refl');
-      paintMount(showcaseMount, currentColor.hex);
-      paintMount(reflMount, currentColor.hex);
-      applyPartState(showcaseMount, view, instant);
-      applyPartState(reflMount, view, instant);
-    }
-
     function applyView(view) {
       currentView = view;
-      carFigure.classList.add('is-switching', 'is-turning');
-      carFigure.classList.add('is-turning-spin');
-      if (carReflection) carReflection.classList.add('is-switching');
-
+      showcaseImg.classList.add('is-switching');
       setTimeout(function () {
-        setImages(view);
-        carFigure.classList.remove('is-switching');
-        if (carReflection) carReflection.classList.remove('is-switching');
-        carFigure.classList.remove('is-turning-spin');
-        setTimeout(function () { carFigure.classList.remove('is-turning'); }, 650);
-      }, 320);
-
+        showcaseImg.src = VIEWS[view];
+        showcaseImg.classList.remove('is-switching');
+      }, 300);
       viewToggle.querySelectorAll('.view-btn').forEach(function (btn) {
         btn.classList.toggle('active', btn.getAttribute('data-view') === view);
       });
@@ -366,18 +316,8 @@ document.addEventListener('DOMContentLoaded', function () {
       animateStat(statSpeed, model.speed, 0);
       animateStat(statAccel, model.accel, 1);
 
-      /* "Turntable swap" — the outgoing car twists off, the new one settles in */
-      [showcaseMount, reflMount].forEach(function (mount) {
-        if (!mount) return;
-        mount.classList.remove('is-model-switching');
-        void mount.offsetWidth; /* restart animation */
-        mount.classList.add('is-model-switching');
-      });
-
       renderTabs();
       applyColor(model.defaultColor, false);
-      applyPartState(showcaseMount, currentView, true);
-      applyPartState(reflMount, currentView, true);
       renderSwatches();
 
       if (!skipScroll) {
@@ -418,7 +358,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* Init */
-    setImages(currentView, true);
     renderTabs();
     renderSwatches();
     applyColor(currentModel.defaultColor, false);
@@ -438,6 +377,99 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { threshold: 0.4 });
     const modelsSection = document.getElementById('models');
     if (modelsSection) modelsCounterObserver.observe(modelsSection);
+  })();
+
+  /* ── SHOWROOM — HYPERCAR ELITE ── */
+  (function () {
+    const grid = document.getElementById('showroomGrid');
+    if (!grid) return;
+
+    const CARS = [
+      {
+        id: 'chiron', chiron: true,
+        brand: 'Bugatti', name: 'Chiron',
+        img: 'img/supercars/chiron_showroom.png',
+        hp: '1,500', speed: '420', badge: 'House Icon'
+      },
+      {
+        id: 'ferrari', brand: 'Ferrari', name: 'SF90 Stradale',
+        img: 'img/supercars/ferrari_sf90_stradale.png',
+        hp: '986', speed: '340'
+      },
+      {
+        id: 'lambo', brand: 'Lamborghini', name: 'Aventador SVJ',
+        img: 'img/supercars/lamborghini_aventador_svj.png',
+        hp: '770', speed: '350'
+      },
+      {
+        id: 'koenigsegg', brand: 'Koenigsegg', name: 'Jesko Absolut',
+        img: 'img/supercars/koenigsegg_jesko_absolut.png',
+        hp: '1,600', speed: '500+'
+      },
+      {
+        id: 'mclaren', brand: 'McLaren', name: 'Speedtail',
+        img: 'img/supercars/mclaren_speedtail.png',
+        hp: '1,050', speed: '403'
+      },
+      {
+        id: 'pagani', brand: 'Pagani', name: 'Huayra BC',
+        img: 'img/supercars/pagani_huayra_bc.png',
+        hp: '750', speed: '383'
+      },
+      {
+        id: 'porsche', brand: 'Porsche', name: '918 Spyder',
+        img: 'img/supercars/porsche_918_spyder.png',
+        hp: '887', speed: '345'
+      }
+    ];
+
+    grid.innerHTML = CARS.map(function (car, i) {
+      const delay = 'delay-' + (Math.min(i % 5, 5) + 1);
+      return (
+        '<div class="showroom-card' + (car.chiron ? ' is-chiron' : '') + ' reveal ' + delay + '" data-car="' + car.id + '">' +
+          '<div class="showroom-spot" aria-hidden="true"></div>' +
+          (car.chiron ? '<span class="showroom-badge">' + car.badge + '</span>' : '') +
+          '<div class="showroom-reflection" aria-hidden="true"><img src="' + car.img + '" alt="" loading="lazy" /></div>' +
+          '<div class="showroom-pedestal" aria-hidden="true"></div>' +
+          '<div class="showroom-figure"><img src="' + car.img + '" alt="' + car.brand + ' ' + car.name + ' on a black studio pedestal" loading="lazy" /></div>' +
+          '<div class="showroom-info">' +
+            '<p class="showroom-brand">' + car.brand + '</p>' +
+            '<h3 class="showroom-name">' + car.name + '</h3>' +
+            '<div class="showroom-stats">' +
+              '<span><strong>' + car.hp + '</strong>hp</span>' +
+              '<span><strong>' + car.speed + '</strong>km/h</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+
+    /* Re-observe the freshly injected .reveal cards */
+    const showroomRevealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+    grid.querySelectorAll('.reveal').forEach(function (el) { showroomRevealObserver.observe(el); });
+
+    /* Subtle 3D tilt toward the cursor — a light showroom-pedestal effect,
+       skipped for touch devices and reduced-motion preference. */
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isTouchDevice = window.matchMedia('(hover: none)').matches;
+
+    if (!prefersReducedMotion && !isTouchDevice) {
+      grid.querySelectorAll('.showroom-card').forEach(function (card) {
+        card.addEventListener('mousemove', function (e) {
+          const rect = card.getBoundingClientRect();
+          const px = (e.clientX - rect.left) / rect.width - 0.5;
+          const py = (e.clientY - rect.top) / rect.height - 0.5;
+          card.style.transform = 'translateY(-10px) rotateX(' + (py * -8) + 'deg) rotateY(' + (px * 10) + 'deg)';
+        });
+        card.addEventListener('mouseleave', function () {
+          card.style.transform = '';
+        });
+      });
+    }
   })();
 
   /* ── CURSOR GLOW EFFECT ── */

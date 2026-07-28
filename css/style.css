@@ -187,7 +187,7 @@ body {
   background-position: center 40%;
   transform: scale(1.05);
   transition: transform 8s ease-out;
-  filter: brightness(0.65);
+  filter: brightness(0.7) saturate(1.35) contrast(1.08);
 }
 
 #hero:hover .hero-bg { transform: scale(1.0); }
@@ -198,9 +198,39 @@ body {
   background: linear-gradient(
     105deg,
     rgba(5, 8, 16, 0.88) 0%,
-    rgba(0, 40, 110, 0.35) 50%,
-    rgba(5, 8, 16, 0.7) 100%
+    rgba(0, 55, 145, 0.4) 50%,
+    rgba(5, 8, 16, 0.72) 100%
   );
+}
+
+/* Studio spotlight beams sweeping softly over the hero, like an overhead
+   showroom rig — pure atmosphere, never distracting from the car. */
+.hero-spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 45% at 30% 0%, rgba(74,157,255,0.20) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 40% at 78% 8%, rgba(255,255,255,0.09) 0%, transparent 65%);
+  animation: heroSpotlightDrift 14s ease-in-out infinite;
+}
+
+@keyframes heroSpotlightDrift {
+  0%, 100% { opacity: 0.75; transform: translateX(0); }
+  50%       { opacity: 1;    transform: translateX(2%); }
+}
+
+/* Glossy showroom floor — a soft reflective sheen at the base of the hero,
+   as if the car sits on polished black tile. */
+.hero-floor-sheen {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 26%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(74,157,255,0.14) 0%, transparent 100%);
+  mix-blend-mode: screen;
 }
 
 .hero-content { position: relative; z-index: 2; }
@@ -603,17 +633,51 @@ body {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
+  background: #030407;
+  box-shadow: 0 0 0 1px var(--glass-border), 0 30px 70px -20px rgba(0,0,0,0.7);
 }
 
 .design-img-wrap img {
   width: 100%;
   height: 500px;
   object-fit: cover;
-  transition: transform 0.8s ease;
+  filter: saturate(1.25) contrast(1.05);
+  transition: transform 0.8s ease, filter 0.8s ease;
   display: block;
 }
 
-.design-img-wrap:hover img { transform: scale(1.04); }
+.design-img-wrap:hover img { transform: scale(1.04); filter: saturate(1.4) contrast(1.08); }
+
+/* Studio rim-light glow that breathes gently around the frame */
+.design-img-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow: inset 0 0 60px rgba(74,157,255,0.0);
+  animation: designRimGlow 5s ease-in-out infinite;
+}
+
+@keyframes designRimGlow {
+  0%, 100% { box-shadow: inset 0 0 50px rgba(74,157,255,0.08); }
+  50%       { box-shadow: inset 0 0 90px rgba(74,157,255,0.22); }
+}
+
+/* Diagonal showroom shine sweeping across the paintwork on hover */
+.design-img-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 40%; height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.16) 45%, rgba(255,255,255,0) 55%, transparent 100%);
+  transform: skewX(-18deg);
+  transition: left 0.9s ease;
+}
+
+.design-img-wrap:hover::after { left: 120%; }
 
 .design-img-overlay {
   position: absolute;
@@ -791,19 +855,41 @@ body {
 
 .model-configurator { position: relative; z-index: 1; }
 
-/* Showcase — exhibition stage */
+/* Showcase */
 .model-showcase {
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 40%, #0d1424 0%, #060911 60%, #030408 100%);
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 8%, rgba(74,157,255,0.16) 0%, transparent 60%),
+    linear-gradient(180deg, #03040a 0%, #050810 55%, #0a1424 100%);
   border: 1px solid var(--glass-border);
   padding: 2rem 1.5rem 1.5rem;
-  min-height: 420px;
+  min-height: 340px;
   display: flex;
   align-items: center;
   justify-content: center;
-  --paint-hex: #0047AB;
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,0.75);
+}
+
+/* Glossy showroom floor line beneath the car, with a faint mirrored sheen */
+.model-showcase::after {
+  content: '';
+  position: absolute;
+  left: 8%; right: 8%; bottom: 8%;
+  height: 40%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(74,157,255,0.22) 0%, transparent 75%);
+  filter: blur(2px);
+}
+
+.model-showcase-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 55%, rgba(74,157,255,0.18) 0%, transparent 65%);
+  pointer-events: none;
+  animation: modelGlowPulse 4s ease-in-out infinite;
 }
 
 @keyframes modelGlowPulse {
@@ -811,200 +897,27 @@ body {
   50% { opacity: 1; }
 }
 
-/* Backdrop: spotlights + rotating rim + slow light sweep */
-.stage-backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
-
-.stage-spotlight {
-  position: absolute;
-  top: -20%;
-  width: 60%;
-  height: 140%;
-  background: radial-gradient(ellipse at center, rgba(255,255,255,0.10) 0%, transparent 70%);
-  filter: blur(6px);
-  animation: spotlightPulse 5s ease-in-out infinite;
-}
-.stage-spotlight-a { left: -8%; animation-delay: 0s; }
-.stage-spotlight-b { right: -8%; animation-delay: 2.4s; }
-
-@keyframes spotlightPulse {
-  0%, 100% { opacity: 0.5; transform: translateY(0); }
-  50% { opacity: 1; transform: translateY(-2%); }
-}
-
-.stage-ring {
-  position: absolute;
-  left: 50%; top: 54%;
-  width: 92%; max-width: 640px;
-  aspect-ratio: 1 / 1;
-  transform: translate(-50%, -50%);
-  border: 1px solid rgba(74,157,255,0.14);
-  border-radius: 50%;
-  animation: ringSpin 22s linear infinite;
-}
-.stage-ring::before {
-  content: '';
-  position: absolute; inset: 10%;
-  border: 1px solid rgba(201,168,76,0.10);
-  border-radius: 50%;
-}
-@keyframes ringSpin {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-.stage-sweep {
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,0.05) 12deg, transparent 40deg, transparent 360deg);
-  animation: sweepSpin 9s linear infinite;
-  mix-blend-mode: screen;
-}
-@keyframes sweepSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-/* Ambient particles — faint drifting dust in the light beams */
-.stage-particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
-.stage-particles span {
-  position: absolute;
-  bottom: -10px;
-  width: 3px; height: 3px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.35);
-  animation: particleFloat 8s linear infinite;
-}
-.stage-particles span:nth-child(1) { left: 12%; animation-delay: 0s;   width:2px; height:2px; }
-.stage-particles span:nth-child(2) { left: 26%; animation-delay: 1.6s; }
-.stage-particles span:nth-child(3) { left: 44%; animation-delay: 3.1s; width:2px; height:2px;}
-.stage-particles span:nth-child(4) { left: 61%; animation-delay: 0.8s; }
-.stage-particles span:nth-child(5) { left: 78%; animation-delay: 4.4s; width:2px; height:2px;}
-.stage-particles span:nth-child(6) { left: 90%; animation-delay: 2.3s; }
-@keyframes particleFloat {
-  0%   { transform: translateY(0) translateX(0); opacity: 0; }
-  10%  { opacity: 0.6; }
-  90%  { opacity: 0.2; }
-  100% { transform: translateY(-280px) translateX(14px); opacity: 0; }
-}
-
-/* Floor + reflection glow */
-.stage-floor {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 42%;
-  background: linear-gradient(to top, rgba(6,9,17,0.9) 0%, rgba(6,9,17,0.55) 45%, transparent 100%);
+.model-showcase img {
+  width: 100%;
+  max-height: 380px;
+  object-fit: contain;
+  position: relative;
   z-index: 1;
-}
-.stage-floor::before {
-  content: '';
-  position: absolute; left: 0; right: 0; top: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
-}
-.stage-floor-glow {
-  position: absolute;
-  left: 50%; top: 6%;
-  width: 55%; height: 30px;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at center, var(--paint-hex) 0%, transparent 75%);
-  opacity: 0.35;
-  filter: blur(14px);
-  transition: background 0.5s ease;
+  filter: hue-rotate(0deg) saturate(1) brightness(1);
+  transition: filter 0.6s ease, opacity 0.35s ease, transform 0.6s ease;
+  transform: scale(1);
+  animation: modelCarFloat 6s ease-in-out infinite;
 }
 
-/* Car stage container */
-.car-stage {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  height: 340px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+@keyframes modelCarFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
 }
 
-.car-figure, .car-reflection {
-  position: relative;
-  width: 100%;
-  height: 280px;
+.model-showcase img.is-switching {
+  opacity: 0;
+  transform: scale(0.97);
 }
-
-.car-reflection {
-  height: 90px;
-  margin-top: -6px;
-  opacity: 0.42;
-  transform: scaleY(-1);
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent 85%);
-          mask-image: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent 85%);
-  filter: blur(1.5px);
-}
-
-.car-svg-mount {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transition: opacity 0.5s ease, transform 0.7s cubic-bezier(0.22,0.61,0.36,1);
-}
-.car-svg-mount svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  overflow: visible;
-}
-.car-svg-mount [data-paint="body"] { transition: fill 0.5s ease; }
-
-.car-figure.is-switching .car-svg-mount { opacity: 0; transform: scale(0.94) translateY(6px); }
-.car-reflection.is-switching .car-svg-mount { opacity: 0; }
-
-.car-svg-mount.is-model-switching { animation: carModelSwap 0.75s cubic-bezier(0.22,0.61,0.36,1); }
-@keyframes carModelSwap {
-  0%   { transform: scale(1) rotate(0deg); }
-  35%  { transform: scale(0.9) rotate(-1.5deg); opacity: 0.35; }
-  60%  { transform: scale(0.9) rotate(1.5deg); opacity: 0.35; }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
-/* ── Showroom turntable — the car gently swivels on its own,
-   like a model rotating on a display pedestal ── */
-.car-turntable { perspective: 1400px; width: 100%; height: 100%; }
-.car-figure {
-  transform-style: preserve-3d;
-  animation: turntableIdle 9s ease-in-out infinite;
-}
-@keyframes turntableIdle {
-  0%, 100% { transform: rotateY(0deg); }
-  25%      { transform: rotateY(7deg); }
-  75%      { transform: rotateY(-7deg); }
-}
-.car-figure.is-turning {
-  animation-play-state: paused;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.car-figure.is-turning-spin { transform: rotateY(90deg) !important; }
-
-/* ── Front view: headlights switch on ── */
-.headlight-lens { transition: fill 0.5s ease, filter 0.5s ease; }
-.headlight-beam { opacity: 0; transition: opacity 0.6s ease; }
-.car-svg-mount.lights-on .headlight-lens {
-  fill: #eaf6ff;
-  filter: drop-shadow(0 0 8px rgba(210,230,255,0.9)) drop-shadow(0 0 18px rgba(140,190,255,0.6));
-}
-.car-svg-mount.lights-on .headlight-beam { opacity: 0.35; }
-
-/* ── Side view: door opens on its hinge ── */
-.door-panel {
-  transform-origin: 400px 96px;
-  transition: transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-.car-svg-mount.door-open .door-panel { transform: rotate(-34deg) translate(-8px, -16px); }
-
-/* ── Rear view: engine cover lifts to reveal the bay ── */
-.engine-cover { transition: transform 0.8s ease, opacity 0.8s ease; }
-.engine-bay-detail { opacity: 0; transition: opacity 0.6s ease 0.25s; }
-.car-svg-mount.cover-open .engine-cover { transform: translateY(-42px); opacity: 0.15; }
-.car-svg-mount.cover-open .engine-bay-detail { opacity: 1; }
 
 .model-color-tag {
   position: absolute;
@@ -1021,7 +934,7 @@ body {
   padding: 8px 16px;
   border-radius: 30px;
   backdrop-filter: blur(8px);
-  z-index: 3;
+  z-index: 2;
   transition: opacity 0.3s ease;
 }
 
@@ -1037,7 +950,7 @@ body {
   border-radius: 30px;
   padding: 4px;
   backdrop-filter: blur(8px);
-  z-index: 3;
+  z-index: 2;
 }
 
 .view-btn {
@@ -1238,7 +1151,8 @@ body {
   height: 100%;
   object-fit: cover;
   min-height: 220px;
-  transition: transform 0.7s ease;
+  filter: saturate(1.2);
+  transition: transform 0.7s ease, filter 0.7s ease;
   display: block;
 }
 .g-item-1 img { min-height: 460px; }
@@ -1254,7 +1168,21 @@ body {
   padding: 1.5rem;
 }
 
-.g-item:hover img { transform: scale(1.06); }
+/* Diagonal studio shine sweeping across the frame on hover */
+.g-item::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 35%; height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 0%, rgba(74,157,255,0.22) 45%, rgba(255,255,255,0.06) 55%, transparent 100%);
+  transform: skewX(-18deg);
+  transition: left 0.85s ease;
+}
+
+.g-item:hover::after { left: 130%; }
+.g-item:hover img { transform: scale(1.06); filter: saturate(1.4); }
 .g-item:hover .g-item-overlay { opacity: 1; }
 
 .g-caption {
@@ -1461,6 +1389,263 @@ body {
   color: var(--bugatti-accent);
   background: rgba(74,157,255,0.08);
   transform: translateY(-3px);
+}
+
+/* ═══════════════════════════════════════════
+   SHOWROOM — HYPERCAR ELITE
+   Glossy black studio floor, overhead spotlight rig,
+   neutral white light on rivals vs. signature blue on Chiron.
+═══════════════════════════════════════════ */
+.showroom-section {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(74,157,255,0.10) 0%, transparent 55%),
+    linear-gradient(180deg, #020306 0%, #05070e 40%, #030407 100%);
+}
+
+/* Three soft overhead beams drifting like a real showroom lighting rig */
+.showroom-beam {
+  position: absolute;
+  top: -10%;
+  width: 26%;
+  height: 70%;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 80%);
+  filter: blur(6px);
+  transform-origin: top center;
+}
+.showroom-beam-1 { left: 8%;  animation: showroomBeamSway 9s ease-in-out infinite; }
+.showroom-beam-2 { left: 40%; background: linear-gradient(180deg, rgba(74,157,255,0.10) 0%, transparent 80%); animation: showroomBeamSway 11s ease-in-out infinite reverse; }
+.showroom-beam-3 { left: 70%; animation: showroomBeamSway 8s ease-in-out infinite; }
+
+@keyframes showroomBeamSway {
+  0%, 100% { transform: rotate(-4deg); opacity: 0.5; }
+  50%       { transform: rotate(4deg);  opacity: 0.9; }
+}
+
+.showroom-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.75rem;
+  position: relative;
+  z-index: 1;
+}
+
+.showroom-card {
+  position: relative;
+  border-radius: 10px;
+  padding: 2.25rem 1.25rem 1.5rem;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: center;
+  overflow: hidden;
+  background: linear-gradient(180deg, #06080f 0%, #0a0d16 55%, #000102 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 30px 60px -25px rgba(0,0,0,0.8);
+  transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94), border-color 0.5s ease, box-shadow 0.5s ease;
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+
+/* Overhead spotlight cone — neutral white for rivals */
+.showroom-spot {
+  position: absolute;
+  top: -6%;
+  left: 50%;
+  width: 130%;
+  height: 65%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse 45% 100% at 50% 0%, rgba(255,255,255,0.16) 0%, transparent 72%);
+  pointer-events: none;
+  transition: opacity 0.5s ease, background 0.5s ease;
+  animation: showroomSpotFlicker 5s ease-in-out infinite;
+}
+
+@keyframes showroomSpotFlicker {
+  0%, 100% { opacity: 0.75; }
+  50%       { opacity: 1; }
+}
+
+/* Chiron gets the signature blue key light — the room's brightest point */
+.showroom-card.is-chiron .showroom-spot {
+  background: radial-gradient(ellipse 55% 100% at 50% 0%, rgba(74,157,255,0.42) 0%, transparent 75%);
+}
+
+.showroom-card.is-chiron {
+  border-color: rgba(74,157,255,0.35);
+  box-shadow: 0 0 0 1px rgba(74,157,255,0.18), 0 35px 80px -25px rgba(74,157,255,0.35), 0 30px 60px -25px rgba(0,0,0,0.85);
+}
+
+.showroom-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #050810;
+  background: linear-gradient(135deg, var(--bugatti-accent), #fff);
+  padding: 5px 10px;
+  border-radius: 30px;
+  z-index: 3;
+}
+
+.showroom-figure {
+  position: relative;
+  width: 100%;
+  height: 128px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1;
+  margin-bottom: 0.75rem;
+}
+
+.showroom-figure img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: saturate(1.15) contrast(1.05) drop-shadow(0 10px 14px rgba(0,0,0,0.6));
+  animation: showroomCarFloat 6s ease-in-out infinite;
+}
+
+.showroom-card:nth-child(2n) .showroom-figure img { animation-delay: -1.5s; }
+.showroom-card:nth-child(3n) .showroom-figure img { animation-delay: -3s; }
+.showroom-card:nth-child(4n) .showroom-figure img { animation-delay: -4.5s; }
+
+@keyframes showroomCarFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-5px) scale(1.005); }
+}
+
+/* Mirrored reflection on the glossy floor */
+.showroom-reflection {
+  position: absolute;
+  bottom: 46%;
+  left: 0;
+  right: 0;
+  height: 128px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  transform: scaleY(-1);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 65%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 65%);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.showroom-reflection img {
+  max-width: 78%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: blur(0.5px);
+}
+
+/* Pedestal floor — the glossy black tile the car "stands" on */
+.showroom-pedestal {
+  position: absolute;
+  bottom: 40%;
+  left: 12%;
+  right: 12%;
+  height: 4px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(74,157,255,0.35) 0%, transparent 80%);
+  filter: blur(3px);
+  z-index: 1;
+}
+
+.showroom-card.is-chiron .showroom-pedestal {
+  background: radial-gradient(ellipse 70% 100% at 50% 0%, rgba(74,157,255,0.65) 0%, transparent 80%);
+}
+
+.showroom-info { position: relative; z-index: 2; }
+
+.showroom-brand {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.showroom-card.is-chiron .showroom-brand { color: var(--bugatti-accent); }
+
+.showroom-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.6rem;
+  line-height: 1.2;
+}
+
+.showroom-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1.1rem;
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.showroom-stats strong {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  color: #e8eaf6;
+  font-weight: 700;
+}
+
+.showroom-card.is-chiron .showroom-stats strong { color: var(--bugatti-accent); }
+
+/* Diagonal shine sweep — the signature showroom highlight on hover */
+.showroom-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 35%; height: 100%;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.14) 45%, rgba(74,157,255,0.08) 55%, transparent 100%);
+  transform: skewX(-18deg);
+  transition: left 0.9s ease;
+}
+
+.showroom-card:hover::after { left: 130%; }
+
+.showroom-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(74,157,255,0.4);
+  box-shadow: 0 0 0 1px rgba(74,157,255,0.25), 0 40px 90px -25px rgba(74,157,255,0.4), 0 35px 70px -25px rgba(0,0,0,0.85);
+}
+
+.showroom-card:hover .showroom-spot { opacity: 1; }
+
+@media (max-width: 1199.98px) {
+  .showroom-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 767.98px) {
+  .showroom-grid { grid-template-columns: repeat(2, 1fr); gap: 1.1rem; }
+  .showroom-card { min-height: 270px; padding: 1.75rem 0.9rem 1.25rem; }
+  .showroom-figure { height: 96px; }
+  .showroom-reflection { height: 96px; bottom: 42%; }
+}
+@media (max-width: 479.98px) {
+  .showroom-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .showroom-beam, .showroom-spot, .showroom-figure img,
+  .hero-spotlight, .model-showcase img { animation: none !important; }
 }
 
 /* ═══════════════════════════════════════════
